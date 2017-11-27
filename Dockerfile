@@ -64,11 +64,7 @@ RUN echo "" && \
     svn export https://github.com/ioam/holoviews/trunk/examples holoviews_examples && \
     svn export https://github.com/bloomberg/bqplot/trunk/examples bqplot_examples
 
-# Sign Notebooks
-#RUN for f in *.ipynb; do jupyter trust $f; done
-RUN find . -type f -name '*.ipynb'|while read fname; do echo $fname; jupyter trust "$fname"; done
-
-# Make Jupyter .ipynb notebooks from .ppy files
+# Make Jupyter .ipynb notebooks from .py files
 RUN rm -rf > py_f.txt && \
     find . -type f -name '*.py'|while read fname; do echo "${fname%.*}" >> py_f.txt; done && \
     echo "from py2nb.tools import python_to_notebook; import os.path; import os" > py_f.py && \
@@ -80,6 +76,9 @@ RUN rm -rf > py_f.txt && \
     echo "    print(p, f+'.py', f+'.ipynb')" >> py_f.py && \
     echo "    python_to_notebook(f+'.py', f+'.ipynb')" >> py_f.py && \
     python py_f.py
+
+# Possible sign Notebooks
+#RUN find . -type f -name '*.ipynb'|while read fname; do echo $fname; jupyter trust "$fname"; done
 
 # Possible copy other files to home. ${HOME}
 #COPY Dockerfile ${HOME}
