@@ -31,6 +31,8 @@ ENV CONDA_PACKAGES="bqplot"
 #conda install -c conda-forge $CONDA_PACKAGES && \
 
 ENV PIP_PACKAGES="nmrglue plotly"
+# Convert .py files to .ipynb
+ENV PIP_PACKAGES="$PIP_PACKAGES https://github.com/sklam/py2nb/archive/master.zip"
 #pip install $PIP_PACKAGES
 
 # RISE: Quickly turn your Jupyter Notebooks into a live presentation.
@@ -65,6 +67,19 @@ RUN echo "" && \
 # Sign Notebooks
 #RUN for f in *.ipynb; do jupyter trust $f; done
 RUN find . -type f -name '*.ipynb'|while read fname; do echo $fname; jupyter trust "$fname"; done
+
+# Make Jupyter .ipynb notebooks from .ppy files
+RUN rm -rf > py_f.txt && \
+    find . -type f -name '*.py'|while read fname; do echo "${fname%.*}" >> py_f.txt; done && \
+    echo "from py2nb.tools import python_to_notebook; import os.path; import os" > py_f.py && \
+    echo "f = open('py_f.txt','r'); li = f.readlines()" >> py_f.py && \
+    echo "cdw=os.getcwd()" >> py_f.py && \
+    echo "for l in li:" >> py_f.py && \
+    echo "    p,f=os.path.split(l.strip())" >> py_f.py && \
+    echo "    os.chdir(cdw+os.sep+p)" >> py_f.py && \
+    echo "    print(p, f+'.py', f+'.ipynb')" >> py_f.py && \
+    echo "    python_to_notebook(f+'.py', f+'.ipynb')" >> py_f.py && \
+    python py_f.py
 
 # Possible copy other files to home. ${HOME}
 #COPY Dockerfile ${HOME}
