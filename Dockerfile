@@ -55,7 +55,9 @@ RUN echo "" && \
 # https://github.com/bokeh/bokeh
 # https://github.com/bloomberg/bqplot
 RUN echo "" && \
-    svn export https://github.com/bokeh/bokeh/trunk/examples bokeh_examples && \
+    git clone --depth 1 git@github.com:bokeh/bokeh.git && \
+    mv bokeh/examples bokeh_examples && \
+    rm -rf bokeh && \
     svn export https://github.com/bokeh/datashader/trunk/examples datashader_examples && \
     svn export https://github.com/ioam/holoviews/trunk/examples holoviews_examples && \
     svn export https://github.com/bloomberg/bqplot/trunk/examples bqplot_examples
